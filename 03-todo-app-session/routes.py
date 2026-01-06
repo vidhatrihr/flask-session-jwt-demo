@@ -31,8 +31,8 @@ def login():
         'message': f'logged in as {user.name}',
         'payload': {
             'token': session.token,
-            'session_id': session.id,
-            'user_id': session.user_id
+            'sessionId': session.id,
+            'userId': session.user_id
         }
     })
   else:
@@ -60,9 +60,10 @@ def list_todos():
       'payload': {
           'todos': [
               {
+                  'id': todo.id,
                   'text': todo.text,
-                  'is_done': todo.is_done,
-                  'is_starred': todo.is_starred
+                  'isDone': todo.is_done,
+                  'isStarred': todo.is_starred
               } for todo in todos
           ]
       }

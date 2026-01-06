@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/main.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <!-- Login accordion -->
+      <details>
+        <summary>Login</summary>
+        <form>
+          <label>
+            Email:
+            <input type="text" id="email" value="rahul@example.com" />
+          </label>
+
+          <label>
+            Password:
+            <input type="text" id="password" value="qwerty" />
+          </label>
+
+          <button>Login</button>
+        </form>
+      </details>
+
+      <div id="auth-result">not logged in</div>
+
+      <button onclick="fetchTodos()">Fetch all todos</button>
+
+      <ul id="todos">
+      </ul>
+    </main>
+
+  </body>
+</html>
