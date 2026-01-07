@@ -7,7 +7,8 @@ if (sessionId && token) {
   document.querySelector('#auth-result').textContent = 'already logged in';
 }
 
-document.querySelector('form').addEventListener('submit', handleLogin);
+document.querySelector('#login-form').addEventListener('submit', handleLogin);
+document.querySelector('#todo-form').addEventListener('submit', handleCreateTodo);
 
 function renderTodos(todos) {
   document.querySelector('#todos').innerHTML = '';
@@ -16,6 +17,7 @@ function renderTodos(todos) {
       'beforeend',
       html`
         <li>
+          <span onclick="deleteTodo(${todo.id})">×</span>
           <span class="${todo.isDone ? 'done' : ''}" onclick="markDone(${todo.id})"
             >${todo.text}
           </span>
@@ -69,12 +71,10 @@ async function api(method, path, params = {}) {
 async function handleLogin(event) {
   event.preventDefault();
 
-  const response = await api('post', '/auth/login', {
-    email: email.value,
-    password: password.value,
+  const data = await api('post', '/auth/login', {
+    email: document.querySelector('#email').value,
+    password: document.querySelector('#password').value,
   });
-
-  const data = await response.json();
 
   if (data.success) {
     sessionId = data.payload.sessionId;
@@ -86,25 +86,43 @@ async function handleLogin(event) {
   document.querySelector('#auth-result').textContent = data.message;
 }
 
+async function handleCreateTodo(event) {
+  event.preventDefault();
+
+  await api('get', '/todo/create', {
+    text: document.querySelector('#todo-text').value,
+  });
+
+  fetchTodos();
+}
+
 async function fetchTodos() {
   const data = await api('get', '/todo/list');
 
   renderTodos(data.payload.todos);
 }
 
-async function markDone(id) {
+async function markDone(todoId) {
   await api('get', '/todo/update', {
-    todoId: id,
+    todoId,
     action: 'markDone',
   });
 
   fetchTodos();
 }
 
-async function markStarred(id) {
+async function markStarred(todoId) {
   await api('get', '/todo/update', {
-    todoId: id,
+    todoId,
     action: 'markStarred',
   });
+  fetchTodos();
+}
+
+async function deleteTodo(todoId) {
+  await api('get', '/todo/delete', {
+    todoId,
+  });
+
   fetchTodos();
 }

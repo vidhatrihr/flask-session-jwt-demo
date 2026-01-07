@@ -23,6 +23,6 @@ class Todo(db.Model):
   __tablename__ = 'todos'
   id = Column(Integer, primary_key=True, autoincrement=True)
   text = Column(String)
+  user_id = Column(Integer)
   is_done = Column(Boolean, default=False)
   is_starred = Column(Boolean, default=False)
-  user_id = Column(Integer)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask
 from routes import routes
 from models import db
 from populate_db import populate_db

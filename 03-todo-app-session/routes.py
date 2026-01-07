@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, jsonify
 from werkzeug.security import check_password_hash
 from models import db, User, Session, Todo
-from utils import generate_token
+from utils import validate_session, generate_token
+from decorators import login_required
 
 routes = Blueprint('routes', __name__)
 
@@ -43,15 +44,8 @@ def login():
 
 
 @routes.route('/todo/list')
-def list_todos():
-  session_id = request.args.get('sessionId')
-  token = request.args.get('token')
-
-  session = Session.query.filter_by(id=session_id).first()
-
-  if not session or session.token != token:
-    return jsonify({'success': False, 'message': 'Invalid session'}), 401
-
+@login_required
+def list_todos(session):
   todos = Todo.query.filter_by(user_id=session.user_id).all()
 
   return jsonify({
@@ -64,25 +58,33 @@ def list_todos():
                   'text': todo.text,
                   'isDone': todo.is_done,
                   'isStarred': todo.is_starred
-              } for todo in todos
+              } for todo in todos  # serialization
           ]
       }
   })
 
 
 @routes.route('/todo/create')
-def create_todo():
-  ...
+@login_required
+def create_todo(session):
+  text = request.args.get('text')
+
+  db.session.add(Todo(
+      text=text,
+      user_id=session.user_id
+  ))
+  db.session.commit()
+
+  return jsonify({'success': True, 'message': 'Todo created'})
 
 
 @routes.route('/todo/update')
-def update_todo():
+@login_required
+def update_todo(session):
   todo_id = request.args.get("todoId")
   action = request.args.get('action')
 
   todo = Todo.query.filter_by(id=todo_id).first()
-  if not todo:
-    return jsonify({'success': False, 'message': 'Todo not found'})
 
   if action == 'markDone':
     todo.is_done = not todo.is_done
@@ -94,5 +96,13 @@ def update_todo():
 
 
 @routes.route('/todo/delete')
-def delete_todo():
-  ...
+@login_required
+def delete_todo(session):
+  todo_id = request.args.get('todoId')
+
+  todo = Todo.query.filter_by(id=todo_id).first()
+
+  db.session.delete(todo)
+  db.session.commit()
+
+  return jsonify({'success': True, 'message': 'Todo deleted'})
