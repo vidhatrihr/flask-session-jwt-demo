@@ -1,11 +1,21 @@
 const html = String.raw;
 
-let sessionId = localStorage.getItem('sessionId');
-let token = localStorage.getItem('token');
+// let sessionId = localStorage.getItem('sessionId');
+// let token = localStorage.getItem('token');
 
-if (sessionId && token) {
-  document.querySelector('#auth-result').textContent = 'already logged in';
-}
+// if (sessionId && token) {
+//   document.querySelector('#auth-result').textContent = 'already logged in';
+// }
+
+// if (document.cookie) {
+//   document.querySelector('#auth-result').textContent = 'already logged in';
+// }
+
+api('get', '/auth/whoami').then(data => {
+  if (data.success) {
+    document.querySelector('#auth-result').textContent = data.message;
+  }
+});
 
 document.querySelector('#login-form').addEventListener('submit', handleLogin);
 document.querySelector('#todo-form').addEventListener('submit', handleCreateTodo);
@@ -41,8 +51,8 @@ async function api(method, path, params = {}) {
   if (method == 'get') {
     const query = new URLSearchParams({
       ...params,
-      sessionId,
-      token,
+      // sessionId,
+      // token,
     }).toString();
 
     url = `http://127.0.0.1:5000${path}?${query}`;
@@ -77,10 +87,10 @@ async function handleLogin(event) {
   });
 
   if (data.success) {
-    sessionId = data.payload.sessionId;
-    token = data.payload.token;
-    localStorage.setItem('sessionId', sessionId);
-    localStorage.setItem('token', token);
+    // sessionId = data.payload.sessionId;
+    // token = data.payload.token;
+    // localStorage.setItem('sessionId', sessionId);
+    // localStorage.setItem('token', token);
   }
 
   document.querySelector('#auth-result').textContent = data.message;
@@ -89,7 +99,7 @@ async function handleLogin(event) {
 async function handleCreateTodo(event) {
   event.preventDefault();
 
-  await api('get', '/todo/create', {
+  await api('post', '/todo/create', {
     text: document.querySelector('#todo-text').value,
   });
 

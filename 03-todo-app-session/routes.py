@@ -12,6 +12,16 @@ def index():
   return render_template('index.html')
 
 
+@routes.route('/auth/whoami')
+@login_required
+def whoami(session):
+  user = User.query.filter_by(id=session.user_id).first()
+  return jsonify({
+      'success': True,
+      'message': f'logged in as {user.name}',
+  })
+
+
 @routes.route('/auth/login', methods=['POST'])
 def login():
   email = request.json.get('email')
@@ -27,20 +37,19 @@ def login():
     db.session.add(session)
     db.session.commit()
 
-    return jsonify({
+    response = jsonify({
         'success': True,
         'message': f'logged in as {user.name}',
-        'payload': {
-            'token': session.token,
-            'sessionId': session.id,
-            'userId': session.user_id
-        }
     })
+    response.set_cookie('sessionId', str(session.id), httponly=True)
+    response.set_cookie('token', session.token, httponly=True)
+
+    return response
   else:
     return jsonify({
         'success': False,
         'message': 'email or password incorrect'
-    })
+    }), 401
 
 
 @routes.route('/todo/list')
@@ -64,10 +73,10 @@ def list_todos(session):
   })
 
 
-@routes.route('/todo/create')
+@routes.route('/todo/create', methods=['POST'])
 @login_required
 def create_todo(session):
-  text = request.args.get('text')
+  text = request.json.get('text')
 
   db.session.add(Todo(
       text=text,
