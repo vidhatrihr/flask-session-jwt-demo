@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <script src="static/main.js" defer></script>
+    <link rel="stylesheet" href="static/style.css">
+  </head>
+  <body>
+    <main>
+      <section>
+        <details>
+          <summary>Login</summary>
+          <form id='login-form'>
+
+            <label>
+              Email:
+              <input type="email" id='email' value='vidu@example.com'>
+            </label>
+
+            <label>
+              Password:
+              <input type="password" id='password' value='qwerty'>
+            </label>
+
+            <button>Login</button>
+          </form>
+        </details>
+        <div id='auth-result'>Not logged in</div>
+      </section>
+
+      <section>
+        <form id='todo-form'>
+          <label>
+            Todo:
+            <input type="text" id='todo-text' value='Drink coffee'>
+          </label>
+
+          <button>Create</button>
+        </form>
+
+        <button onclick="fetchTodos()">Fetch all todos</button>
+        <ul id='todos'>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
