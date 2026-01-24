@@ -36,7 +36,7 @@ function renderTodos(todos) {
             >${todo.isStarred ? '★' : '☆'}
           </span>
         </li>
-      `
+      `,
     );
   }
 }
@@ -109,7 +109,9 @@ async function handleCreateTodo(event) {
 async function fetchTodos() {
   const data = await api('get', '/todo/list');
 
-  renderTodos(data.payload.todos);
+  if (data.success) {
+    renderTodos(data.payload.todos);
+  }
 }
 
 async function markDone(todoId) {
