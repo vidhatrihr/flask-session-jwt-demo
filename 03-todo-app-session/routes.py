@@ -37,14 +37,14 @@ def login():
     db.session.add(session)
     db.session.commit()
 
-    response = jsonify({
+    return jsonify({
         'success': True,
         'message': f'logged in as {user.name}',
+        'payload': {
+            'sessionId': session.id,
+            'token': session.token
+        }
     })
-    response.set_cookie('sessionId', str(session.id), httponly=True)
-    response.set_cookie('token', session.token, httponly=True)
-
-    return response
   else:
     return jsonify({
         'success': False,

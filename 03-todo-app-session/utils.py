@@ -10,8 +10,13 @@ def generate_token(length=10):
 
 
 def validate_session():
-  session_id = request.cookies.get('sessionId')
-  token = request.cookies.get('token')
+  if request.method == 'GET':
+    session_id = request.args.get('sessionId')
+    token = request.args.get('token')
+
+  if request.method == 'POST':
+    session_id = request.json.get('sessionId')
+    token = request.json.get('token')
 
   session = Session.query.filter_by(id=session_id).first()
   if session and session.token == token:
