@@ -2,9 +2,8 @@ import json
 import base64
 import hmac
 import hashlib
-import time
 
-SECRET = b'super_secret_key'
+SECRET = b'SUPER_SECRET_KEY'
 
 # ----- helpers -----
 
@@ -49,7 +48,6 @@ def jwt_decode(encoded: str) -> dict:
   expected_signature = sign(message)
 
   if not hmac.compare_digest(signature, expected_signature):
-    raise Exception('Invalid token')
+    raise Exception('💀 Signature mismatch. Data cannot be trusted')
 
-  payload = json.loads(b64url_decode(payload_64))
-  return payload
+  return json.loads(b64url_decode(payload_64))
