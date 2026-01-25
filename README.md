@@ -52,7 +52,7 @@ This application serves as a baseline for the more advanced to-do applications. 
 #### Version 2.2
 
 - **Folder:** `02.2-basic-todo-app`
-- **Description:** An improved version of the basic to-do app that uses a `Todo` class to represent to-do items and a dictionary to store them (also handling the auto-incrementing of IDs).
+- **Description:** An improved version of the basic to-do app that uses a `Todo` class to represent to-do items and a dictionary to store them.
 - **Functionality:** Adds ability to mark "done" or "starred". Unlike the previous version, which stored simple text strings, this version uses `Todo` objects, allowing individual properties to be updated.
 
 ### 3. To-Do App with Session (Local Storage)
@@ -62,7 +62,7 @@ This application serves as a baseline for the more advanced to-do applications. 
 - **Authentication:** For each subsequent request, the client sends the session details in the query parameters (for GET requests) or the JSON request body (for POST requests). The server then validates these details against the database to authenticate the user.
 - **Security Note:** This approach has security vulnerabilities. Storing session information in local storage makes it accessible to any script running on the page (XSS vulnerability), and passing session details in query parameters exposes them in the URL.
 - **Key Files:**
-  - `routes.py`: Defines the application's routes, including login, logout, and to-do CRUD operations.
+  - `routes.py`: Defines the application's routes, including login, logout, and CRUD operations.
   - `decorators.py`: Contains the `login_required` decorator, which protects routes that require authentication.
   - `utils.py`: Includes utility functions, such as `validate_session`, which is responsible for authenticating the user.
 
@@ -88,11 +88,11 @@ This application serves as a baseline for the more advanced to-do applications. 
   - **Stateless Authentication:** The server does not need to store session information, making the application more scalable.
   - **Custom JWT Implementation:** The JWT functionality is implemented from scratch in `jwt.py`, providing a clear understanding of how JWTs work.
   - **Token Expiration:** The application includes a mechanism to expire tokens after a certain period, which is a crucial security feature for JWT-based authentication.
+- **Security Note:** This implementation lacks a logout capability. Because the system is stateless, there is no way to invalidate or regenerate JWTs apart from their expiry time.
 - **Key Files:**
   - `jwt.py`: Contains the from-scratch implementation of JWT encoding, decoding, and verification.
   - `decorators.py`: The `login_required` decorator is updated to use the `verify_jwt` function to authenticate users.
   - `routes.py`: The login route is modified to generate and set the JWT cookie.
-- **Note:** This implementation lacks a logout capability. Because the system is stateless, there is no way to invalidate or regenerate JWTs apart from their expiry time.
 
 ### 6. To-Do App with JWT and Session Regeneration
 
