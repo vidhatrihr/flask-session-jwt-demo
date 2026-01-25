@@ -1,9 +1,12 @@
+import time
+
 from flask import Blueprint, render_template, request, jsonify
 from werkzeug.security import check_password_hash
 
+from jwt import jwt_encode
 from models import db, User, Session, Todo
-from utils import generate_token
 from decorators import login_required
+
 
 routes = Blueprint('routes', __name__)
 
@@ -15,11 +18,11 @@ def index():
 
 @routes.route('/auth/whoami')
 @login_required
-def whoami(session):
-  user = User.query.filter_by(id=session.user_id).first()
+def whoami(payload):
+  user = User.query.filter_by(id=payload['user_id']).first()
   return jsonify({
       'success': True,
-      'message': f'Logged in as {user.name}',
+      'message': f'Logged in as {user.name}'
   })
 
 
@@ -31,21 +34,24 @@ def login():
   user = User.query.filter_by(email=email).first()
 
   if user and check_password_hash(user.password, password):
-    session = Session(
-        token=generate_token(),
-        user_id=user.id
-    )
+    session = Session(user_id=user.id)
     db.session.add(session)
     db.session.commit()
 
-    return jsonify({
+    response = jsonify({
         'success': True,
-        'message': f'Logged in as {user.name}',
-        'payload': {
-            'sessionId': session.id,
-            'token': session.token
-        }
+        'message': f'Logged in as {user.name}'
     })
+
+    payload = {
+        'user_id': user.id,
+        'iat': int(time.time()),
+        "session_id": session.id,
+    }
+    jwt = jwt_encode(payload)
+
+    response.set_cookie('jwt', jwt, httponly=True)
+    return response
   else:
     return jsonify({
         'success': False,
@@ -53,22 +59,51 @@ def login():
     }), 401
 
 
+@routes.route('/auth/logout')
+@login_required
+def logout(payload):
+  user_id = payload['user_id']
+  session_id = payload['session_id']
+
+  session = Session.query.filter_by(id=session_id, user_id=user_id).first()
+  if session:
+    db.session.delete(session)
+    db.session.commit()
+
+  response = jsonify({'success': True, 'message': 'Logged out'})
+  response.delete_cookie('jwt')
+  return response
+
+
+@routes.route('/auth/logout-everywhere')
+@login_required
+def logout_everywhere(payload):
+  # Delete all sessions for the given user
+  Session.query.filter_by(user_id=payload['user_id']).delete()
+  db.session.commit()
+
+  response = jsonify({'success': True, 'message': 'Logged out from everywhere'})
+  response.delete_cookie('jwt')
+  return response
+
+
 @routes.route('/todo/list')
 @login_required
-def list_todos(session):
-  todos = Todo.query.filter_by(user_id=session.user_id).all()
+def list_todos(payload):
+  todos = Todo.query.filter_by(user_id=payload['user_id']).all()
 
   return jsonify({
       'success': True,
-      'message': 'All todos fetched',
+      'message': 'All todos are fetched',
       'payload': {
           'todos': [
               {
                   'id': todo.id,
                   'text': todo.text,
+                  'isStarred': todo.is_starred,
                   'isDone': todo.is_done,
-                  'isStarred': todo.is_starred
-              } for todo in todos  # Because SQLAlchemy objects cannot be serialized
+              }
+              for todo in todos
           ]
       }
   })
@@ -76,25 +111,25 @@ def list_todos(session):
 
 @routes.route('/todo/create', methods=['POST'])
 @login_required
-def create_todo(session):
+def create_todos(payload):
   text = request.json.get('text')
 
   db.session.add(Todo(
       text=text,
-      user_id=session.user_id
+      user_id=payload['user_id'],
   ))
   db.session.commit()
 
-  return jsonify({'success': True, 'message': 'Todo created'})
+  return jsonify({'success': True, 'message': 'Todo is created'})
 
 
 @routes.route('/todo/update')
 @login_required
-def update_todo(session):
-  todo_id = request.args.get("todoId")
+def update_todo(payload):
+  todo_id = request.args.get('todoId')
   action = request.args.get('action')
 
-  todo = Todo.query.filter_by(id=todo_id, user_id=session.user_id).first()
+  todo = Todo.query.filter_by(id=todo_id, user_id=payload['user_id']).first()
   if not todo:
     return jsonify({'success': False, 'message': 'Todo not found or unauthorized'}), 404
 
@@ -109,10 +144,10 @@ def update_todo(session):
 
 @routes.route('/todo/delete')
 @login_required
-def delete_todo(session):
+def delete_todo(payload):
   todo_id = request.args.get('todoId')
 
-  todo = Todo.query.filter_by(id=todo_id, user_id=session.user_id).first()
+  todo = Todo.query.filter_by(id=todo_id, user_id=payload['user_id']).first()
   if not todo:
     return jsonify({'success': False, 'message': 'Todo not found or unauthorized'}), 404
 

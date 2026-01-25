@@ -28,9 +28,9 @@ class Todo:
 
 
 # Create three objects, they will automatically be added to table
-Todo('task')
-Todo('learn app dev')
-Todo('meditate')
+Todo('Task')
+Todo('Learn app dev')
+Todo('Meditate')
 
 
 @app.route('/')
@@ -53,9 +53,22 @@ def create_todo():
   return jsonify({'message': 'Todo created'})
 
 
-@app.route('/todo/delete/<int:id>')
-def delete_todo(id):
-  del Todo.table[id]
+@app.route('/todo/update/<int:todo_id>')
+def update_todo(todo_id):
+  action = request.args.get('action')
+
+  todo = Todo.table[todo_id]
+  if action == 'markDone':
+    todo.is_done = not todo.is_done
+  elif action == 'markStarred':
+    todo.id_starred = not todo.id_starred
+
+  return jsonify({'message': 'Todo updated'})
+
+
+@app.route('/todo/delete/<int:todo_id>')
+def delete_todo(todo_id):
+  del Todo.table[todo_id]
   return jsonify({'message': 'Todo deleted'})
 
 

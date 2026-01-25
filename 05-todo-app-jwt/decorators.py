@@ -32,8 +32,8 @@ def login_required(fn):
     payload = verify_jwt()
     if payload:
       if count_parameters == 0:
-        return fn(*args, **kwargs)  # Not passing user_id
-      return fn(payload['user_id'], *args, **kwargs)  # Passing user_id as first parameter
+        return fn(*args, **kwargs)  # Not passing payload
+      return fn(payload, *args, **kwargs)  # Passing payload as first parameter
     return jsonify({'success': False, 'message': 'Unauthorized'}), 401
 
   return wrapper

@@ -119,11 +119,13 @@ def create_todos(session):
 
 @routes.route('/todo/update')
 @login_required
-def update_todo():
+def update_todo(session):
   todo_id = request.args.get('todoId')
   action = request.args.get('action')
 
-  todo = Todo.query.filter_by(id=todo_id).first()
+  todo = Todo.query.filter_by(id=todo_id, user_id=session.user_id).first()
+  if not todo:
+    return jsonify({'success': False, 'message': 'Todo not found or unauthorized'}), 404
 
   if action == 'markDone':
     todo.is_done = not todo.is_done
@@ -136,10 +138,12 @@ def update_todo():
 
 @routes.route('/todo/delete')
 @login_required
-def delete_todo():
+def delete_todo(session):
   todo_id = request.args.get('todoId')
 
-  todo = Todo.query.filter_by(id=todo_id).first()
+  todo = Todo.query.filter_by(id=todo_id, user_id=session.user_id).first()
+  if not todo:
+    return jsonify({'success': False, 'message': 'Todo not found or unauthorized'}), 404
 
   db.session.delete(todo)
   db.session.commit()

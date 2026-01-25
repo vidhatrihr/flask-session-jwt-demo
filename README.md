@@ -82,7 +82,7 @@ This application serves as a baseline for the more advanced to-do applications. 
 ### 5. To-Do App with JWT
 
 - **Folder:** `05-todo-app-jwt`
-- **Description:** This is the most advanced version of the to-do app, implementing a stateless authentication system using JSON Web Tokens (JWT). This approach eliminates the need for server-side session storage.
+- **Description:** This version of the to-do app implements a stateless authentication system using JSON Web Tokens (JWT). This approach eliminates the need for server-side session storage.
 - **Authentication:** After a successful login, the server generates a JWT that contains the user's ID and an "issued at" timestamp. This JWT is then sent to the client as an HTTP-only cookie. For every subsequent request, the server decodes and verifies the JWT to authenticate the user.
 - **Features:**
   - **Stateless Authentication:** The server does not need to store session information, making the application more scalable.
@@ -92,6 +92,20 @@ This application serves as a baseline for the more advanced to-do applications. 
   - `jwt.py`: Contains the from-scratch implementation of JWT encoding, decoding, and verification.
   - `decorators.py`: The `login_required` decorator is updated to use the `verify_jwt` function to authenticate users.
   - `routes.py`: The login route is modified to generate and set the JWT cookie.
+- **Note:** This implementation lacks a logout capability. Because the system is stateless, there is no way to invalidate or regenerate JWTs apart from their expiry time.
+
+### 6. To-Do App with JWT and Session Regeneration
+
+- **Folder:** `06-todo-app-jwt-with-session`
+- **Description:** This application extends the JWT implementation by adding token regeneration capabilities backed by database sessions. It introduces a hybrid approach to handle authentication and logout.
+- **Authentication:** Tokens are valid for a short duration (e.g., 10 minutes). When a token expires, the server queries the database for a corresponding session. If a valid session exists, the token is regenerated.
+- **Features:**
+  - **Logout Capability:** By deleting the session entry from the database, the system prevents the token from being regenerated, effectively logging the user out.
+  - **Token Regeneration:** Ensures that active users can continue their session seamlessly as long as the server-side session remains valid.
+- **Security Note:** Deleting session entries from the database won't immediately invalidate existing JWTs. They will remain active for a maximum of the remaining token duration (e.g., 10 minutes). This is a necessary compromise. For added security, this duration can be reduced to five or two minutes.
+- **Key Files:**
+  - `decorators.py`: Handles the logic for checking token expiration and regenerating tokens if the session is valid.
+  - `routes.py`: Implements login, logout, and logout-everywhere functionality.
 
 ---
 

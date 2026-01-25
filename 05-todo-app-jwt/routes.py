@@ -18,8 +18,8 @@ def index():
 
 @routes.route('/auth/whoami')
 @login_required
-def whoami(user_id):
-  user = User.query.filter_by(id=user_id).first()
+def whoami(payload):
+  user = User.query.filter_by(id=payload['user_id']).first()
   return jsonify({
       'success': True,
       'message': f'Logged in as {user.name}'
@@ -56,8 +56,8 @@ def login():
 
 @routes.route('/todo/list')
 @login_required
-def list_todos(user_id):
-  todos = Todo.query.filter_by(user_id=user_id).all()
+def list_todos(payload):
+  todos = Todo.query.filter_by(user_id=payload['user_id']).all()
 
   return jsonify({
       'success': True,
@@ -78,12 +78,12 @@ def list_todos(user_id):
 
 @routes.route('/todo/create', methods=['POST'])
 @login_required
-def create_todos(user_id):
+def create_todos(payload):
   text = request.json.get('text')
 
   db.session.add(Todo(
       text=text,
-      user_id=user_id,
+      user_id=payload['user_id'],
   ))
   db.session.commit()
 
@@ -92,11 +92,13 @@ def create_todos(user_id):
 
 @routes.route('/todo/update')
 @login_required
-def update_todo():
+def update_todo(payload):
   todo_id = request.args.get('todoId')
   action = request.args.get('action')
 
-  todo = Todo.query.filter_by(id=todo_id).first()
+  todo = Todo.query.filter_by(id=todo_id, user_id=payload['user_id']).first()
+  if not todo:
+    return jsonify({'success': False, 'message': 'Todo not found or unauthorized'}), 404
 
   if action == 'markDone':
     todo.is_done = not todo.is_done
@@ -109,10 +111,13 @@ def update_todo():
 
 @routes.route('/todo/delete')
 @login_required
-def delete_todo():
+def delete_todo(payload):
   todo_id = request.args.get('todoId')
 
-  todo = Todo.query.filter_by(id=todo_id).first()
+  todo = Todo.query.filter_by(id=todo_id, user_id=payload['user_id']).first()
+  if not todo:
+    return jsonify({'success': False, 'message': 'Todo not found or unauthorized'}), 404
+
   db.session.delete(todo)
   db.session.commit()
 

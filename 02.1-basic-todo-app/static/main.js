@@ -6,12 +6,12 @@ async function loadTodos() {
 
   document.querySelector('#todo-list').innerHTML = '';
 
-  todos.forEach((todo, index) => {
+  todos.forEach((text, index) => {
     document
       .querySelector('#todo-list')
       .insertAdjacentHTML(
         'beforeend',
-        html`<li>${todo} <button onclick="deleteTodo(${index})">del</button></li>`,
+        html`<li>${text} <button onclick="deleteTodo(${index})">delete</button></li>`,
       );
   });
 }
@@ -21,22 +21,16 @@ document.querySelector('form').addEventListener('submit', createTodo);
 async function createTodo(event) {
   event.preventDefault();
 
-  const input = document.querySelector('#todo-input');
-  const todo = input.value;
-
-  if (todo == '') return;
-
   await fetch('/todo/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      todo,
+      text: document.querySelector('#todo-input').value,
     }),
   });
 
-  input.value = '';
   loadTodos();
 }
 

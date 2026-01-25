@@ -4,7 +4,7 @@ from flask import Flask, render_template, jsonify, request
 app = Flask(__name__)
 
 # ⚠️ There is no database in this app
-todos = ['task', 'learn app dev', 'meditate']  # Collection of todo texts
+todos = ['Task', 'Learn app dev', 'Meditate']  # Collection of texts
 
 
 @app.route('/')
@@ -19,9 +19,9 @@ def get_todos():
 
 @app.route('/todo/create', methods=['POST'])
 def create_todo():
-  todo = request.json.get('todo')
+  text = request.json.get('text')
 
-  todos.append(todo)
+  todos.append(text)
   return jsonify({'message': 'Todo created'})
 
 

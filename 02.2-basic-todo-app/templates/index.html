@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Todo App</title>
+    <title>Todo App [No authentication]</title>
     <script src="/static/main.js" defer></script>
     <style>
         body {
@@ -15,6 +15,10 @@
             flex-direction: column;
             gap: 0.5rem;
         }
+
+        .done {
+            text-decoration: line-through;
+        }
     </style>
   </head>
   <body>
@@ -23,7 +27,7 @@
     <form>
       <label>
         Create Todo:
-        <input type="text" id="todo-input" />
+        <input type="text" id="todo-input" value="Drink coffee" />
       </label>
       <button>Create</button>
     </form>

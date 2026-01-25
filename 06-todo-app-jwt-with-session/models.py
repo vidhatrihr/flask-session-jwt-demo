@@ -15,7 +15,6 @@ class User(db.Model):
 class Session(db.Model):
   __tablename__ = 'sessions'
   id = Column(Integer, autoincrement=True, primary_key=True)
-  token = Column(String)
   user_id = Column(Integer)
 
 
