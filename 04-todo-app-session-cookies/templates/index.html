@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App</title>
+    <title>Todo App [Session Cookies]</title>
     <script src="static/main.js" defer></script>
     <link rel="stylesheet" href="static/style.css">
   </head>
@@ -27,7 +27,11 @@
             <button>Login</button>
           </form>
         </details>
+
         <div id='auth-result'>Not logged in</div>
+
+        <button onclick="logout()">Logout</button>
+        <button onclick="logoutEverywhere()">Logout from everywhere</button>
       </section>
 
       <section>

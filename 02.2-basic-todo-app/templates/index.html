@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+    <script src="/static/main.js" defer></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        ul {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>Todo App (No authentication)</h1>
+
+    <form>
+      <label>
+        Create Todo:
+        <input type="text" id="todo-input" />
+      </label>
+      <button>Create</button>
+    </form>
+
+    <ul id="todo-list">
+    </ul>
+  </body>
+</html>

@@ -31,14 +31,14 @@ with app.app_context():
   db.create_all()
   if User.query.count() == 0:
     db.session.add(User(
-        name='rahul',
-        email='rahul@example.com',
-        password='jackal'
-    ))
-    db.session.add(User(
         name='vidu',
         email='vidu@example.com',
         password='fish'
+    ))
+    db.session.add(User(
+        name='rahul',
+        email='rahul@example.com',
+        password='jackal'
     ))
     db.session.commit()
 
@@ -70,17 +70,16 @@ def login():
 
     return jsonify({
         'success': True,
-        'message': f'logged in as {user.name}',
+        'message': f'Logged in as {user.name}',
         'payload': {
-            'session_id': session.id,
-            'token': session.token,
-            'user_id': user.id
+            'sessionId': session.id,
+            'token': session.token
         }
     })
   else:
     return jsonify({
         'success': False,
-        'message': 'email or password is incorrect'
+        'message': 'Email or password is incorrect'
     })
 
 
@@ -95,12 +94,12 @@ def launch():
     user = User.query.filter_by(id=session.user_id).first()
     return jsonify({
         'success': True,
-        'message': f'missile is launched 🚀 by {user.name}'
+        'message': f'Missile is launched 🚀 by {user.name}'
     })
   else:
     return jsonify({
         'success': False,
-        'message': 'you cannot launch missile'
+        'message': 'You cannot launch missile'
     }), 401
 
 

@@ -1,10 +1,10 @@
-# ⚠️ There is no authentication in this app.
-
 from flask import Flask, render_template, jsonify, request
 
+# ⚠️ There is no authentication in this app
 app = Flask(__name__)
 
-todos = ['task', 'learn app dev', 'meditate']
+# ⚠️ There is no database in this app
+todos = ['task', 'learn app dev', 'meditate']  # Collection of todo texts
 
 
 @app.route('/')
@@ -20,8 +20,9 @@ def get_todos():
 @app.route('/todo/create', methods=['POST'])
 def create_todo():
   todo = request.json.get('todo')
+
   todos.append(todo)
-  return jsonify({'message': 'Todos created'})
+  return jsonify({'message': 'Todo created'})
 
 
 @app.route('/todo/delete/<int:index>')

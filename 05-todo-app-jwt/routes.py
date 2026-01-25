@@ -1,6 +1,8 @@
 import time
+
 from flask import Blueprint, render_template, request, jsonify
 from werkzeug.security import check_password_hash
+
 from jwt import jwt_encode
 from models import db, User, Todo
 from decorators import login_required
@@ -90,7 +92,7 @@ def create_todos(user_id):
 
 @routes.route('/todo/update')
 @login_required
-def update_todo(user_id):
+def update_todo():
   todo_id = request.args.get('todoId')
   action = request.args.get('action')
 
@@ -107,11 +109,10 @@ def update_todo(user_id):
 
 @routes.route('/todo/delete')
 @login_required
-def delete_todo(user_id):
+def delete_todo():
   todo_id = request.args.get('todoId')
 
   todo = Todo.query.filter_by(id=todo_id).first()
-
   db.session.delete(todo)
   db.session.commit()
 

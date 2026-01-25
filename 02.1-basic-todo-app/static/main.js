@@ -11,7 +11,7 @@ async function loadTodos() {
       .querySelector('#todo-list')
       .insertAdjacentHTML(
         'beforeend',
-        html`<li>${todo} <button onclick="deleteTodo(${index})">del</button></li>`
+        html`<li>${todo} <button onclick="deleteTodo(${index})">del</button></li>`,
       );
   });
 }
@@ -23,6 +23,8 @@ async function createTodo(event) {
 
   const input = document.querySelector('#todo-input');
   const todo = input.value;
+
+  if (todo == '') return;
 
   await fetch('/todo/create', {
     method: 'POST',

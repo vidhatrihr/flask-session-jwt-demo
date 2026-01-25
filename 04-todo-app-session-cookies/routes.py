@@ -54,6 +54,33 @@ def login():
     }), 401
 
 
+@routes.route('/auth/logout')
+@login_required
+def logout(session):
+  db.session.delete(session)
+  db.session.commit()
+
+  response = jsonify({'success': True, 'message': 'Logged out'})
+  response.delete_cookie('sessionId')
+  response.delete_cookie('token')
+  return response
+
+
+@routes.route('/auth/logout-everywhere')
+@login_required
+def logout_everywhere(session):
+  Session.query.filter_by(user_id=session.user_id).delete()  # Bulk delete
+  db.session.commit()
+
+  response = jsonify({
+      'success': True,
+      'message': 'Logged out from everywhere'
+  })
+  response.delete_cookie('sessionId')
+  response.delete_cookie('token')
+  return response
+
+
 @routes.route('/todo/list')
 @login_required
 def list_todos(session):
@@ -92,7 +119,7 @@ def create_todos(session):
 
 @routes.route('/todo/update')
 @login_required
-def update_todo(session):
+def update_todo():
   todo_id = request.args.get('todoId')
   action = request.args.get('action')
 
@@ -109,7 +136,7 @@ def update_todo(session):
 
 @routes.route('/todo/delete')
 @login_required
-def delete_todo(session):
+def delete_todo():
   todo_id = request.args.get('todoId')
 
   todo = Todo.query.filter_by(id=todo_id).first()

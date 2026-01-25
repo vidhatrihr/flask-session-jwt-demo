@@ -1,18 +1,36 @@
+import time
+import inspect
 from functools import wraps
 from flask import jsonify, request
 from jwt import jwt_decode
 
 
+def verify_jwt():
+  jwt = request.cookies.get('jwt')
+  if jwt:
+    try:
+      payload = jwt_decode(jwt)
+      # Check if the token has expired (1 hour = 3600 seconds)
+      if payload and 'iat' in payload:
+        if time.time() > payload['iat'] + 3600:
+          return None
+      return payload
+    except Exception as e:
+      print(e)
+  return None
+
+
 def login_required(fn):
+  # Count of parameters defined by view function (fn)
+  count_parameters = len(inspect.signature(fn).parameters)
+
   @wraps(fn)
   def wrapper(*args, **kwargs):
-    jwt = request.cookies.get('jwt')
-    if jwt:
-      try:
-        payload = jwt_decode(jwt)
-        return fn(payload['user_id'], *args, **kwargs)
-      except Exception as e:
-        print(e)
+    payload = verify_jwt()
+    if payload:
+      if count_parameters == 0:
+        return fn(*args, **kwargs)  # Not passing user_id
+      return fn(payload['user_id'], *args, **kwargs)  # Passing user_id as first parameter
     return jsonify({'success': False, 'message': 'Unauthorized'}), 401
 
   return wrapper

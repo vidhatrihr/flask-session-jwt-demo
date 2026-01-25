@@ -3,10 +3,6 @@ const html = String.raw;
 let sessionId = localStorage.getItem('sessionId');
 let token = localStorage.getItem('token');
 
-if (sessionId && token) {
-  document.querySelector('#auth-result').textContent = 'already logged in';
-}
-
 api('get', '/auth/whoami').then(data => {
   if (data.success) {
     document.querySelector('#auth-result').textContent = data.message;
@@ -42,15 +38,12 @@ async function api(method, path, params = {}) {
     method: method,
   };
 
+  params = { ...params, sessionId, token };
+
   let url;
 
   if (method == 'get') {
-    const query = new URLSearchParams({
-      ...params,
-      sessionId,
-      token,
-    }).toString();
-
+    const query = new URLSearchParams(params).toString();
     url = `http://127.0.0.1:5000${path}?${query}`;
   }
 
@@ -58,12 +51,7 @@ async function api(method, path, params = {}) {
     options.headers = {
       'Content-Type': 'application/json',
     };
-    options.body = JSON.stringify({
-      ...params,
-      sessionId,
-      token,
-    });
-
+    options.body = JSON.stringify(params);
     url = `http://127.0.0.1:5000${path}`;
   }
 

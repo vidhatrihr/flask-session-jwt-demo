@@ -21,10 +21,26 @@ def populate_db():
   db.session.add_all([user1, user2])
 
   todos = [
-      Todo(text='Drink water', user_id=1, is_starred=True, is_done=True),
-      Todo(text='Be happy',  user_id=1, is_starred=True, is_done=False),
-      Todo(text='Keep coding',  user_id=1, is_starred=False, is_done=True),
-      Todo(text='Study hard', user_id=1),
+      Todo(
+          text='Drink water',
+          user_id=1,
+          is_starred=True,
+          is_done=True,
+      ),
+      Todo(
+          text='Be happy',
+          user_id=1,
+          is_starred=True,
+      ),
+      Todo(
+          text='Keep coding',
+          user_id=1,
+          is_done=True,
+      ),
+      Todo(
+          text='Study hard',
+          user_id=1
+      ),
   ]
 
   db.session.add_all(todos)

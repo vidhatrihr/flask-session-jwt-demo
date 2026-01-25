@@ -118,3 +118,13 @@ async function deleteTodo(todoId) {
 
   fetchTodos();
 }
+
+async function logout() {
+  const data = await api('get', '/auth/logout');
+  document.querySelector('#auth-result').textContent = data.message;
+}
+
+async function logoutEverywhere() {
+  const data = await api('get', '/auth/logout-everywhere');
+  document.querySelector('#auth-result').textContent = data.message;
+}
