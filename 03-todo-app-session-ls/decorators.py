@@ -5,7 +5,7 @@ from flask import jsonify
 
 
 def login_required(fn):
-  # Count of parameters defined by view function (fn)
+  # How many parameters defined by view function (fn)
   count_parameters = len(inspect.signature(fn).parameters)
 
   @wraps(fn)

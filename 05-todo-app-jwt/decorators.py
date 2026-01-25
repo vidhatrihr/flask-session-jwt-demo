@@ -1,8 +1,12 @@
-import time
 import inspect
 from functools import wraps
+
+import time
 from flask import jsonify, request
 from jwt import jwt_decode
+
+# Token expiration duration in seconds (1 hour)
+TOKEN_EXPIRATION_SECONDS = 3600
 
 
 def verify_jwt():
@@ -10,10 +14,9 @@ def verify_jwt():
   if jwt:
     try:
       payload = jwt_decode(jwt)
-      # Check if the token has expired (1 hour = 3600 seconds)
-      if payload and 'iat' in payload:
-        if time.time() > payload['iat'] + 3600:
-          return None
+      # Check if the token has expired
+      if time.time() > payload['iat'] + TOKEN_EXPIRATION_SECONDS:
+        return None
       return payload
     except Exception as e:
       print(e)
@@ -21,7 +24,7 @@ def verify_jwt():
 
 
 def login_required(fn):
-  # Count of parameters defined by view function (fn)
+  # How many parameters defined by view function (fn)
   count_parameters = len(inspect.signature(fn).parameters)
 
   @wraps(fn)

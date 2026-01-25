@@ -110,13 +110,13 @@ This application serves as a baseline for the more advanced to-do applications. 
     ```bash
     git clone https://github.com/vidhatrihr/flask-session-jwt-demo.git
     ```
-2.  **Navigate to the desired application's directory:**
-    ```bash
-    cd flask-session-jwt-demo/01-launch-missile-session
-    ```
-3.  **Install the required dependencies:**
+2.  **Install the required dependencies:**
     ```bash
     pip install Flask Flask-SQLAlchemy
+    ```
+3.  **Navigate to the desired application's directory:**
+    ```bash
+    cd flask-session-jwt-demo/01-launch-missile-session
     ```
 4.  **Run the application:**
     ```bash
