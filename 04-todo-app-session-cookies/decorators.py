@@ -15,7 +15,7 @@ def login_required(fn):
     if session:
       if count_parameters == 0:
         return fn(*args, **kwargs)  # Not passing session
-      return fn(session, *args, **kwargs)  # Session must be passed as first parameter
+      return fn(session, *args, **kwargs)  # Passing session as first parameter
     return jsonify({'success': False, 'message': 'Unauthorized'}), 401
 
   return wrapper
