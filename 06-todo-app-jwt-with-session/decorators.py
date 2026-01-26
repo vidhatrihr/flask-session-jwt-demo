@@ -6,7 +6,7 @@ from flask import jsonify, request
 from models import Session
 from jwt import jwt_encode, jwt_decode
 
-# Token expiration duration in seconds (10 minutes)
+# Token expiration duration in seconds
 TOKEN_EXPIRATION_SECONDS = 600
 
 

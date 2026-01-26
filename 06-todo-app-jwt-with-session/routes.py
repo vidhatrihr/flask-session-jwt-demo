@@ -62,10 +62,8 @@ def login():
 @routes.route('/auth/logout')
 @login_required
 def logout(payload):
-  user_id = payload['user_id']
-  session_id = payload['session_id']
-
-  session = Session.query.filter_by(id=session_id, user_id=user_id).first()
+  # Delete current session
+  session = Session.query.filter_by(id=payload['session_id']).first()
   if session:
     db.session.delete(session)
     db.session.commit()
